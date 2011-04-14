@@ -1,2 +1,3 @@
 *.o
-gnumake.exe
+/gnumake.exe
+/config.h
