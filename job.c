@@ -2263,7 +2263,61 @@ void clean_tmp (void)
 }
 
 #endif /* On Amiga */
-
+
+char * escape_string(char * ap, char * string, char ** restp, const char sh_chars[])
+{
+  char * p;
+  for (p = string; *p != '\0'; ++p)
+    {
+      if (restp != NULL && *p == '\n')
+        {
+          *restp = p;
+          break;
+        }
+      else if (*p == '\\' && p[1] == '\n')
+        {
+          /* POSIX says we keep the backslash-newline.  If we don't have a
+             POSIX shell on DOS/Windows/OS2, mimic the pre-POSIX behavior
+             and remove the backslash/newline.  */
+#if defined (__MSDOS__) || defined (__EMX__) || defined (WINDOWS32)
+# define PRESERVE_BSNL  unixy_shell
+#else
+# define PRESERVE_BSNL  1
+#endif
+          if (PRESERVE_BSNL)
+            {
+              *(ap++) = '\\';
+              /* Only non-batch execution needs another backslash,
+                 because it will be passed through a recursive
+                 invocation of this function.  */
+              if (!batch_mode_shell)
+                *(ap++) = '\\';
+              *(ap++) = '\n';
+            }
+          ++p;
+          continue;
+        }
+
+      /* DOS shells don't know about backslash-escaping.  */
+      if (unixy_shell && !batch_mode_shell &&
+          (*p == '\\' || *p == '\'' || *p == '"'
+           || isspace ((unsigned char)*p)
+           || strchr (sh_chars, *p) != 0))
+        *ap++ = '\\';
+#ifdef __MSDOS__
+      else if (unixy_shell && strneq (p, "...", 3))
+        {
+          /* The case of `...' wildcard again.  */
+          strcpy (ap, "\\.\\.\\");
+          ap += 5;
+          p  += 2;
+        }
+#endif
+      *ap++ = *p;
+    }
+  return ap;
+}
+
 #ifndef VMS
 /* Figure out the argument list necessary to run LINE as a command.  Try to
    avoid using a shell.  This routine handles only ' quoting, and " quoting
@@ -2865,65 +2919,17 @@ construct_command_argv_internal (char *line, char **restp, char *shell,
 	return new_argv;
       }
 
-    new_line = alloca (shell_len + 1 + sflags_len + 1
+    new_line = alloca ((shell_len*2) + 1 + sflags_len + 1
                              + (line_len*2) + 1);
     ap = new_line;
-    memcpy (ap, shell, shell_len);
-    ap += shell_len;
+    ap = escape_string(ap, shell, restp, sh_chars);
     *(ap++) = ' ';
     memcpy (ap, shellflags, sflags_len);
     ap += sflags_len;
     *(ap++) = ' ';
     command_ptr = ap;
-    for (p = line; *p != '\0'; ++p)
-      {
-	if (restp != NULL && *p == '\n')
-	  {
-	    *restp = p;
-	    break;
-	  }
-	else if (*p == '\\' && p[1] == '\n')
-	  {
-	    /* POSIX says we keep the backslash-newline.  If we don't have a
-               POSIX shell on DOS/Windows/OS2, mimic the pre-POSIX behavior
-               and remove the backslash/newline.  */
-#if defined (__MSDOS__) || defined (__EMX__) || defined (WINDOWS32)
-# define PRESERVE_BSNL  unixy_shell
-#else
-# define PRESERVE_BSNL  1
-#endif
-	    if (PRESERVE_BSNL)
-	      {
-		*(ap++) = '\\';
-		/* Only non-batch execution needs another backslash,
-		   because it will be passed through a recursive
-		   invocation of this function.  */
-		if (!batch_mode_shell)
-		  *(ap++) = '\\';
-		*(ap++) = '\n';
-	      }
-	    ++p;
-	    continue;
-	  }
-
-        /* DOS shells don't know about backslash-escaping.  */
-	if (unixy_shell && !batch_mode_shell &&
-            (*p == '\\' || *p == '\'' || *p == '"'
-             || isspace ((unsigned char)*p)
-             || strchr (sh_chars, *p) != 0))
-	  *ap++ = '\\';
-#ifdef __MSDOS__
-        else if (unixy_shell && strneq (p, "...", 3))
-          {
-            /* The case of `...' wildcard again.  */
-            strcpy (ap, "\\.\\.\\");
-            ap += 5;
-            p  += 2;
-          }
-#endif
-	*ap++ = *p;
-      }
-    if (ap == new_line + shell_len + sflags_len + 2)
+    ap = escape_string(ap, line, restp, sh_chars);
+    if (ap == command_ptr)
       /* Line was empty.  */
       return 0;
     *ap = '\0';
