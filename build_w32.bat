@@ -1,3 +1,11 @@
+:: This batch file builds make for Windows.
+:: 
+:: Usage: build_w32.bat <compiler> <configuration>
+::   <compiler> should be "gcc" or "cl"
+::   <configuration> should be "debug" or "release"
+::
+:: Note: Release mode with cl is not supported yet.
+
 @echo off
 rem Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
 rem 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
@@ -24,7 +32,7 @@ sed -f config.h.W32.sed config.h.W32.template > config.h.W32
 if not exist config.h copy config.h.W32 config.h
 cd w32\subproc
 echo "Creating the subproc library"
-%ComSpec% /c build.bat %1
+%ComSpec% /c build.bat %1 %2
 cd ..\..
 
 if exist link.dbg del link.dbg
@@ -169,35 +177,43 @@ if exist .\WinRel/%make%.exe echo "WinRel build succeeded!"
 set make=
 GoTo BuildEnd
 :GCCBuild
+
+IF "%2" == "release" (
+  set configflags=-O2
+) ELSE (
+  set configflags=-O0 -gdwarf-2 -g3
+)
+set cflags=-mthreads -Wall -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H %configflags%
+
 echo on
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c variable.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c rule.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c remote-stub.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c commands.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c file.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c getloadavg.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c default.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c signame.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c expand.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c dir.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c main.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c getopt1.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c job.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c read.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c version.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c getopt.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c arscan.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c remake.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c hash.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c strcache.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c misc.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c ar.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c function.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c vpath.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c implicit.c
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c ./glob/glob.c -o glob.o
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c ./glob/fnmatch.c -o fnmatch.o
-gcc -mthreads -Wall -gdwarf-2 -g3 -O2 -I. -I./glob -I./w32/include -DWINDOWS32 -DHAVE_CONFIG_H -c ./w32/pathstuff.c -o pathstuff.o
-gcc -mthreads -gdwarf-2 -g3 -o gnumake.exe variable.o rule.o remote-stub.o commands.o file.o getloadavg.o default.o signame.o expand.o dir.o main.o getopt1.o job.o read.o version.o getopt.o arscan.o remake.o misc.o hash.o strcache.o ar.o function.o vpath.o implicit.o glob.o fnmatch.o pathstuff.o w32_misc.o sub_proc.o w32err.o -lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32
+gcc %cflags% -c variable.c
+gcc %cflags% -c rule.c
+gcc %cflags% -c remote-stub.c
+gcc %cflags% -c commands.c
+gcc %cflags% -c file.c
+gcc %cflags% -c getloadavg.c
+gcc %cflags% -c default.c
+gcc %cflags% -c signame.c
+gcc %cflags% -c expand.c
+gcc %cflags% -c dir.c
+gcc %cflags% -c main.c
+gcc %cflags% -c getopt1.c
+gcc %cflags% -c job.c
+gcc %cflags% -c read.c
+gcc %cflags% -c version.c
+gcc %cflags% -c getopt.c
+gcc %cflags% -c arscan.c
+gcc %cflags% -c remake.c
+gcc %cflags% -c hash.c
+gcc %cflags% -c strcache.c
+gcc %cflags% -c misc.c
+gcc %cflags% -c ar.c
+gcc %cflags% -c function.c
+gcc %cflags% -c vpath.c
+gcc %cflags% -c implicit.c
+gcc %cflags% -c ./glob/glob.c -o glob.o
+gcc %cflags% -c ./glob/fnmatch.c -o fnmatch.o
+gcc %cflags% -c ./w32/pathstuff.c -o pathstuff.o
+gcc -mthreads %configflags% -o gnumake.exe variable.o rule.o remote-stub.o commands.o file.o getloadavg.o default.o signame.o expand.o dir.o main.o getopt1.o job.o read.o version.o getopt.o arscan.o remake.o misc.o hash.o strcache.o ar.o function.o vpath.o implicit.o glob.o fnmatch.o pathstuff.o w32_misc.o sub_proc.o w32err.o -lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32
 :BuildEnd
 echo on
