@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <config.h>
+#undef uintmax_t     // fixes "error: duplicate 'unsigned'" and  "error: 'long long long' is too long for GCC" during build
 #include <stdlib.h>
 #include <stdio.h>
 #ifdef _MSC_VER

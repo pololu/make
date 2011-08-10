@@ -1,13 +1,13 @@
-This directory contains the 3.82 release of GNU Make.
+This directory contains the 3.82-pololu1 release of GNU Make.
+For more information, including how to build this, see
 
-See the file NEWS for the user-visible changes from previous releases.
-In addition, there have been bugs fixed.
+  https://github.com/pololu/make/wiki
 
-Please check the system-specific notes below for any caveats related to
-your operating system.
+or
 
-For general building and installation instructions, see the file INSTALL.
+  http://www.pololu.com/
 
+  
 If you need to build GNU Make and have no other `make' program to use,
 you can use the shell script `build.sh' instead.  To do this, first run
 `configure' as described in INSTALL.  Then, instead of typing `make' to
@@ -18,7 +18,6 @@ use for `./make install', or whatever else.
 Some systems' Make programs are broken and cannot process the Makefile for
 GNU Make.  If you get errors from your system's Make when building GNU
 Make, try using `build.sh' instead.
-
 
 GNU Make is free software.  See the file COPYING for copying conditions.
 

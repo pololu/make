@@ -104,6 +104,7 @@ static void vmsWaitForChildren (int *);
 #ifdef WINDOWS32
 # include <windows.h>
 # include <io.h>
+#undef uintmax_t     // fixes "error: duplicate 'unsigned'" and  "error: 'long long long' is too long for GCC" during build
 # include <process.h>
 # include "sub_proc.h"
 # include "w32err.h"

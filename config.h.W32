@@ -395,7 +395,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.  */
 /* #undef UMAX4_3 */
 
 /* Version number of package */
-#define VERSION "3.82"
+#define VERSION "3.82-pololu1"
 
 /* Define if using the dmalloc debugging malloc package */
 /* #undef WITH_DMALLOC */

@@ -3062,7 +3062,8 @@ print_version (void)
      word "Copyright", so it hardly seems worth it.  */
 
   printf ("%sCopyright (C) 2010  Free Software Foundation, Inc.\n", precede);
-
+  printf (_("%sModified by Pololu <http://www.pololu.com>\n"), precede);
+  
   printf (_("%sLicense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n\
 %sThis is free software: you are free to change and redistribute it.\n\
 %sThere is NO WARRANTY, to the extent permitted by law.\n"),
