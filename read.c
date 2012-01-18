@@ -3028,7 +3028,7 @@ parse_file_seq (char **stringp, unsigned int size, int stopchar,
             {
               /* This looks like the first element in an open archive group.
                  A valid group MUST have ')' as the last character.  */
-              const char *e = p + nlen;
+              const char *e = p;
               do
                 {
                   e = next_token (e);
